@@ -6,9 +6,12 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/toyinogun/web-app.git  # <--- REPLACE THIS
+    repoURL: https://github.com/toyinogun/web-app.git
     targetRevision: HEAD
-    path: .  # <--- Verify this path matches where you put the files in your repo
+    path: nginx-ha-chart
+    helm:
+      valueFiles:
+      - values.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: web-apps
