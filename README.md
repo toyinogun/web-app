@@ -21,7 +21,7 @@ graph LR
         
         HPA[⚡ Horizontal Pod Autoscaler] -.->|Monitors CPU| Pod1
         HPA -.->|Monitors CPU| Pod2
-        HPA ==>|Scales Replicas (2-10)| Deploy[Nginx Deployment]
+        HPA ==>|Scales Replicas 2 to 10| Deploy[Nginx Deployment]
     end
     
     ArgoCD[🐙 ArgoCD] ==>|Syncs| Git[This Repo]
