@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: nginx-ha-app
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/toyinogun/web-app.git  # <--- REPLACE THIS
+    targetRevision: HEAD
+    path: .  # <--- Verify this path matches where you put the files in your repo
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: web-apps
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
