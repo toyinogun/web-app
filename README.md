@@ -90,5 +90,50 @@ Want to see the autoscaler in action? We can force a scale-up event by generatin
 3.  **Observe:**
     Within 1-2 minutes, you will see the `TARGETS` percentage spike, and the `REPLICAS` count will increase automatically to handle the load.
 
+## 🌍 Multi-Environment Strategy
+
+This project is structured as a **Helm Chart**, allowing easy deployment to multiple environments (Dev, Staging, Prod) by simply overriding the `values.yaml`.
+
+### Option 1: Pure Helm (Recommended)
+Create separate value files for each environment:
+*   `values-dev.yaml`: Low resources, 1 replica, HPA disabled.
+*   `values-prod.yaml`: High resources, HA enabled (2-10 replicas).
+
+In ArgoCD, simply point the Application to the specific values file:
+```yaml
+source:
+  helm:
+    valueFiles:
+      - values-prod.yaml
+```
+
+### Option 2: Helm + Kustomize (Advanced)
+If you need to patch the manifests **after** Helm renders them (e.g., adding labels or annotations not supported by the Chart), you can use Kustomize to "inflate" the Helm chart.
+
+**Example `kustomization.yaml`:**
+```yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+helmCharts:
+- name: nginx-ha
+  includeCRDs: true
+  valuesInline:
+    replicaCount: 1 
+  releaseName: my-staging-app
+  version: 0.1.0
+  repo: https://github.com/toyinogun/web-app
+
+# Apply last-mile changes (e.g., adding an environment label)
+patches:
+- target:
+    kind: Deployment
+    name: .*
+  patch: |-
+    - op: add
+      path: /metadata/labels/env
+      value: staging
+```
+
 ---
 *Built with ❤️ by Toyin*
